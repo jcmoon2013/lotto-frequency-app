@@ -14,6 +14,7 @@ export default function QrScanner() {
     "카메라 접근을 허용하면 QR을 인식합니다.",
   );
   const [lastUrl, setLastUrl] = useState<string | null>(null);
+  const [showScanner, setShowScanner] = useState(false);
 
   const stop = useCallback(() => {
     if (videoRef.current?.srcObject) {
@@ -23,10 +24,12 @@ export default function QrScanner() {
     }
     readerRef.current = null;
     setStatus("idle");
+    setShowScanner(false);
   }, []);
 
   const start = useCallback(async () => {
     try {
+      setShowScanner(true);
       setStatus("running");
       setMessage("QR 코드를 카메라에 비춰 주세요.");
       const reader = new BrowserMultiFormatReader();
@@ -90,38 +93,39 @@ export default function QrScanner() {
         <div className={styles.cardTitle}>QR 스캔 당첨 확인</div>
         <div className={styles.cardHint}>스캔 후 당첨 확인 페이지로 이동</div>
       </div>
-      <div className={styles.qrBody}>
-        <div className={styles.qrPreview}>
-          <video ref={videoRef} className={styles.qrVideo} />
-          <div className={styles.qrFrame} />
-        </div>
-        <div className={styles.qrControls}>
-          <p className={styles.qrMessage}>{message}</p>
-          <div className={styles.qrButtons}>
-            <button
-              type="button"
-              className={`${styles.button} ${styles.buttonPrimary}`}
-              onClick={start}
-              disabled={status === "running"}
-            >
-              스캔 시작
-            </button>
-            <button
-              type="button"
-              className={styles.button}
-              onClick={stop}
-              disabled={status === "idle"}
-            >
-              스캔 중지
-            </button>
+      {!showScanner ? (
+        <button
+          type="button"
+          className={`${styles.button} ${styles.buttonPrimary}`}
+          onClick={start}
+        >
+          QR 스캔 당첨 확인
+        </button>
+      ) : (
+        <div className={styles.qrBody}>
+          <div className={styles.qrPreview}>
+            <video ref={videoRef} className={styles.qrVideo} />
+            <div className={styles.qrFrame} />
           </div>
-          {lastUrl ? (
-            <p className={styles.qrLink}>
-              마지막 링크: <span>{lastUrl}</span>
-            </p>
-          ) : null}
+          <div className={styles.qrControls}>
+            <p className={styles.qrMessage}>{message}</p>
+            <div className={styles.qrButtons}>
+              <button
+                type="button"
+                className={styles.button}
+                onClick={stop}
+              >
+                스캔 중지
+              </button>
+            </div>
+            {lastUrl ? (
+              <p className={styles.qrLink}>
+                마지막 링크: <span>{lastUrl}</span>
+              </p>
+            ) : null}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

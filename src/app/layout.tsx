@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   description:
     "공식 로또 데이터를 기반으로 가장 많이 나온 번호와 추천/난수 조합을 제공합니다.",
   manifest: "/manifest.json",
+};
+
+export const viewport = {
   themeColor: "#1e6b5c",
 };
 

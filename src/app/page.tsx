@@ -273,6 +273,7 @@ export default function Home() {
         </section>
 
         <QrScanner />
+        <div className={styles.credit}>제작자 : J.C.Moon</div>
       </div>
     </div>
   );

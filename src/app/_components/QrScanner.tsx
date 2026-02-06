@@ -33,11 +33,25 @@ export default function QrScanner() {
       readerRef.current = reader;
 
       const devices = await BrowserMultiFormatReader.listVideoInputDevices();
-      const deviceId = devices[0]?.deviceId;
+      const backCamera =
+        devices.find((d) =>
+          /(back|rear|environment)/i.test(d.label ?? ""),
+        ) ?? devices[0];
+      const deviceId = backCamera?.deviceId;
 
       if (!videoRef.current) {
         throw new Error("video element not ready");
       }
+
+      // Ensure camera permission and stream is active for autoplay on mobile
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: deviceId ? { deviceId: { exact: deviceId } } : { facingMode: "environment" },
+        audio: false,
+      });
+      videoRef.current.srcObject = stream;
+      videoRef.current.muted = true;
+      videoRef.current.playsInline = true;
+      await videoRef.current.play();
 
       await reader.decodeFromVideoDevice(
         deviceId,
